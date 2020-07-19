@@ -1,0 +1,19 @@
+{
+  "name": "code-poster-generator",
+  "version": "1.0.0",
+  "description": "A code poster generator written in Node.js",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wangyifan1997/code-poster-generator.git"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "sharp": "^0.25.4",
+    "xmlbuilder": "^15.1.1"
+  }
+}
