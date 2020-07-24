@@ -1,19 +1,25 @@
 const sharp = require('sharp');
 const fs = require('fs');
 
+const RATIO = 1.6667
 const FONT_SIZE = 5;
 const FONT_RATIO = 0.6;
 const FONT_WIDTH = FONT_SIZE * FONT_RATIO;
 let step, width, height, pixels, code, result;
 
-const image = sharp('./data/test1.png');
+const image = sharp('./data/test.png');
 
 image
     .metadata()
     .then((metadata) => {
-        // return image.resize(Math.floor(metadata.width * ratio), 
+        // return image.resize(Math.floor(metadata.width * RATIO), 
         //                     metadata.height,
-        //                     {background: {r: 255, g: 255, b: 255, alpha: 0.1}})
+        //                     {
+        //                         fit: 'contain',
+        //                         background: {r: 255, g: 255, b: 255, alpha: 0.1}
+        //                     })
+        //             .raw()
+        //             .toBuffer({ resolveWithObject: true });
         return image.raw()
             .toBuffer({ resolveWithObject: true });
     }).then((data) => {
