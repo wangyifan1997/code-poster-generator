@@ -1,33 +1,19 @@
 const sharp = require('sharp');
 const fs = require('fs');
 
-const RATIO = 1.6667
 const FONT_SIZE = 5;
 const FONT_RATIO = 0.6;
 const FONT_WIDTH = FONT_SIZE * FONT_RATIO;
-let step, width, height, pixels, code, result;
 
-const image = sharp('./data/test.png');
+sharp('./data/testpaint1.png')
+    .raw()
+    .toBuffer({ resolveWithObject: true })
+    .then((data) => {
+        const step = data.info.channels;
+        const width = data.info.width;
+        const height = data.info.height;
 
-image
-    .metadata()
-    .then((metadata) => {
-        // return image.resize(Math.floor(metadata.width * RATIO), 
-        //                     metadata.height,
-        //                     {
-        //                         fit: 'contain',
-        //                         background: {r: 255, g: 255, b: 255, alpha: 0.1}
-        //                     })
-        //             .raw()
-        //             .toBuffer({ resolveWithObject: true });
-        return image.raw()
-            .toBuffer({ resolveWithObject: true });
-    }).then((data) => {
-        step = data.info.channels;
-        width = data.info.width;
-        height = data.info.height;
-
-        pixels = [];
+        let pixels = [];
         for (let i = 0; i < data.data.length; i += step) {
             let temp = [];
             for (let j = 0; j < step; j++) {
@@ -35,9 +21,10 @@ image
             }
             pixels.push(temp);
         }
+        console.log('pixels: ', pixels[width * height - 1]);
 
-        code = fs.readFileSync('./data/QueryValidator.ts', 'utf8').replace(/\s*\n+\s*/g, ' ').replace(/\s+/g, ' ');
- 
+        let code = fs.readFileSync('./data/QueryValidator.ts', 'utf8').replace(/\s*\n+\s*/g, ' ').replace(/\s+/g, ' ');
+
         if (code.length < pixels.length) {
             code = code.repeat(Math.ceil(pixels.length / code.length));
         }
@@ -46,7 +33,7 @@ image
             return (c1[0] === c2[0] && c1[1] === c2[1] && c1[2] === c2[2]);
         }
 
-        result = '';
+        let result = '';
         result += `<svg version="1.1"
                         viewBox="0 0 ${100 * width} ${100 * height}"
                         width="${100 * width}" height="${100 * height}"
@@ -54,7 +41,7 @@ image
                         style="font-family: 'Source Code Pro'; font-size: ${FONT_SIZE}px; font-weight: 500; white-space: normal;"
                         xmlns="http://www.w3.org/2000/svg">`;
         for (let i = 0; i < height; i++) {
-            let lastPixel = [0, 0, 0];
+            let lastPixel;
             for (let j = 0; j < width; j++) {
                 let pixel = pixels[i * width + j];
                 let char = code[i * width + j];
