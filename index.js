@@ -5,7 +5,11 @@ const FONT_SIZE = 5;
 const FONT_RATIO = 0.6;
 const FONT_WIDTH = FONT_SIZE * FONT_RATIO;
 
-sharp('./data/testpaint1.png')
+const imageDir = './data/sampleInput3.png';
+const codeDir = './data/sampleCode.ts';
+const outputDir = './data/sampleOutput.xml';
+
+sharp(imageDir)
     .raw()
     .toBuffer({ resolveWithObject: true })
     .then((data) => {
@@ -23,7 +27,7 @@ sharp('./data/testpaint1.png')
         }
         console.log('pixels: ', pixels[width * height - 1]);
 
-        let code = fs.readFileSync('./data/QueryValidator.ts', 'utf8').replace(/\s*\n+\s*/g, ' ').replace(/\s+/g, ' ');
+        let code = fs.readFileSync(codeDir, 'utf8').replace(/\s*\n+\s*/g, ' ').replace(/\s+/g, ' ');
 
         if (code.length < pixels.length) {
             code = code.repeat(Math.ceil(pixels.length / code.length));
@@ -85,7 +89,7 @@ sharp('./data/testpaint1.png')
         }
         result += "</svg>";
 
-        fs.open('./data/output.xml', 'w', (err, fd) => {
+        fs.open(outputDir, 'w', (err, fd) => {
             if (err) {
                 throw (err);
             }
