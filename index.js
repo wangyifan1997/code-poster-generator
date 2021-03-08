@@ -17,13 +17,9 @@ sharp(imageDir)
         const width = data.info.width;
         const height = data.info.height;
 
-        let pixels = [];
+        const pixels = [];
         for (let i = 0; i < data.data.length; i += step) {
-            let temp = [];
-            for (let j = 0; j < step; j++) {
-                temp.push(data.data[i + j]);
-            }
-            pixels.push(temp);
+            pixels.push(data.data.slice(i, i + step));
         }
 
         let code = fs.readFileSync(codeDir, 'utf8').replace(/\s*\n+\s*/g, ' ').replace(/\s+/g, ' ');
@@ -32,7 +28,7 @@ sharp(imageDir)
             code = code.repeat(Math.ceil(pixels.length / code.length));
         }
 
-        isSameColor = (c1, c2) => {
+        const isSameColor = (c1, c2) => {
             return (c1[0] === c2[0] && c1[1] === c2[1] && c1[2] === c2[2]);
         }
 
@@ -43,7 +39,7 @@ sharp(imageDir)
                         xml:space="preserve"
                         style="font-family: 'Source Code Pro'; font-size: ${FONT_SIZE}px; font-weight: 500; white-space: normal;"
                         xmlns="http://www.w3.org/2000/svg">`;
-        let numOpening = 0, numClosing = 0;
+
         for (let i = 0; i < height; i++) {
             let lastPixel;
             for (let j = 0; j < width; j++) {
@@ -72,11 +68,9 @@ sharp(imageDir)
                     result += `<text x="${j * FONT_WIDTH}" y="${i * FONT_SIZE}"  fill="rgb(${pixel[0]} ${pixel[1]} ${pixel[2]})">${char}`;
                     lastPixel = pixel;
                 } else if (j === width - 1) {
-                    if (isSameColor(lastPixel, pixel)) {
-                        result += `${char}</text>`;
-                    } else {
-                        result += `</text><text x="${j * FONT_WIDTH}" y="${i * FONT_SIZE}"  fill="rgb(${pixel[0]} ${pixel[1]} ${pixel[2]})">${char}</text>`;
-                    }
+                    result += isSameColor(lastPixel, pixel) ? 
+                                `${char}</text>` : 
+                                `</text><text x="${j * FONT_WIDTH}" y="${i * FONT_SIZE}"  fill="rgb(${pixel[0]} ${pixel[1]} ${pixel[2]})">${char}</text>`;
                 } else {
                     if (isSameColor(lastPixel, pixel)) {
                         result += char;
@@ -87,6 +81,7 @@ sharp(imageDir)
                 }
             }
         }
+        
         result += "</svg>";
 
         fs.open(outputDir, 'w', (err, fd) => {
