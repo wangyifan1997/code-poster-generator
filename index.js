@@ -5,9 +5,9 @@ const FONT_SIZE = 5;
 const FONT_RATIO = 0.6;
 const FONT_WIDTH = FONT_SIZE * FONT_RATIO;
 
-const imageDir = './data/sampleInput3.png';
-const codeDir = './data/sampleCode.ts';
-const outputDir = './data/sampleOutput.xml';
+const imageDir = './data/hbd.png';
+const codeDir = './data/p2p.go';
+const outputDir = './data/hbdOutput.xml';
 
 sharp(imageDir)
     .raw()
@@ -25,7 +25,6 @@ sharp(imageDir)
             }
             pixels.push(temp);
         }
-        console.log('pixels: ', pixels[width * height - 1]);
 
         let code = fs.readFileSync(codeDir, 'utf8').replace(/\s*\n+\s*/g, ' ').replace(/\s+/g, ' ');
 
@@ -44,6 +43,7 @@ sharp(imageDir)
                         xml:space="preserve"
                         style="font-family: 'Source Code Pro'; font-size: ${FONT_SIZE}px; font-weight: 500; white-space: normal;"
                         xmlns="http://www.w3.org/2000/svg">`;
+        let numOpening = 0, numClosing = 0;
         for (let i = 0; i < height; i++) {
             let lastPixel;
             for (let j = 0; j < width; j++) {
@@ -75,7 +75,7 @@ sharp(imageDir)
                     if (isSameColor(lastPixel, pixel)) {
                         result += `${char}</text>`;
                     } else {
-                        result += `<text x="${j * FONT_WIDTH}" y="${i * FONT_SIZE}"  fill="rgb(${pixel[0]} ${pixel[1]} ${pixel[2]})">${char}</text>`;
+                        result += `</text><text x="${j * FONT_WIDTH}" y="${i * FONT_SIZE}"  fill="rgb(${pixel[0]} ${pixel[1]} ${pixel[2]})">${char}</text>`;
                     }
                 } else {
                     if (isSameColor(lastPixel, pixel)) {
